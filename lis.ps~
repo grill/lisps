@@ -4,17 +4,15 @@
 /printTokens {
    isOpenPT
    { (\() print (\n) print 
-     token pop
+     token pop mark exch
      {
          printTokens
 	 token
 	 not
 	 { (\)) print (\n) print exit }
 	 if
-	 dup length string cvs
-	 print
-	 (\n)
-	 print
+         getTokenName % token - string
+	 exch
      } loop
    }
    if
@@ -26,10 +24,11 @@ print
 {
    % print
    flush
-   (%stdin) (r)file =string readline
+   readLineStdin % - string bool
    not
    % (%stdin) (r)file token
    { pop exit }
    if
    printTokens
+   pstack
 } loop
