@@ -4,7 +4,7 @@
 /printTokens {
    isOpenPT
    { (\() print (\n) print 
-     token pop mark exch
+     token pop
      {
          printTokens
 	 token
@@ -12,8 +12,9 @@
 	 { (\)) print (\n) print exit }
 	 if
 	 dup length string cvs
-	 exch
-	 
+	 print
+	 (\n)
+	 print
      } loop
    }
    if
@@ -31,5 +32,4 @@ print
    { pop exit }
    if
    printTokens
-   pstack
 } loop
