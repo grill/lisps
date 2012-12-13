@@ -1,5 +1,10 @@
-/isOpenPT
+/isOpenPT % string - string bool
 {
-   dup 0 get
-   40 eq
+   dup length 0 eq not % isNotEmpty
+   { % == (
+      dup 0 get
+      40 eq
+   }
+   { false }
+   ifelse
 } def

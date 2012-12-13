@@ -1,0 +1,35 @@
+%!
+(util.ps) run
+
+/printTokens {
+   isOpenPT
+   { (\() print (\n) print 
+     token pop
+     {
+         printTokens
+	 token
+	 not
+	 { (\)) print (\n) print exit }
+	 if
+	 dup length string cvs
+	 print
+	 (\n)
+	 print
+     } loop
+   }
+   if
+} def
+
+(Lisp Interpreter by Alex and Gabriel
+)
+print
+{
+   % print
+   flush
+   (%stdin) (r)file =string readline
+   not
+   % (%stdin) (r)file token
+   { pop exit }
+   if
+   printTokens
+} loop
