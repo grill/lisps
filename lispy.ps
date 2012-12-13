@@ -1,0 +1,32 @@
+%!
+(util.ps) run
+
+(Lisp Interpreter
+)
+print
+{
+   % print
+   flush
+   (%stdin) (r)file =string readline
+   not
+   % (%stdin) (r)file token
+   { pop exit }
+   if
+   dup
+   print
+   (\n)
+   print
+   { print (\n) print }
+   isOpenPT
+   if
+   {
+      token
+      not
+      { exit }
+      if
+      dup length string cvs
+      print
+      (\n)
+      print
+  } loop
+} loop
