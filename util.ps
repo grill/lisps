@@ -8,3 +8,13 @@
    { false }
    ifelse
 } def
+
+/getTokenName % token - string
+{
+   dup length string cvs
+} def
+
+/readLineStdin % - string
+{
+   (%stdin) (r) file =string readline
+} def

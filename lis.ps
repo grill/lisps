@@ -11,7 +11,7 @@
 	 not
 	 { (\)) print (\n) print exit }
 	 if
-	 dup length string cvs
+         getTokenName % token - string
 	 print
 	 (\n)
 	 print
@@ -26,7 +26,7 @@ print
 {
    % print
    flush
-   (%stdin) (r)file =string readline
+   readLineStdin % - string bool
    not
    % (%stdin) (r)file token
    { pop exit }
