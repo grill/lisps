@@ -1,5 +1,6 @@
 %!
 (util.ps) run
+(eval.ps) run
 
 /mytoken {
   isOpenPT
@@ -9,8 +10,8 @@
 
   { exch mytoken }
   { 
-    count 2 le not
-    { ] exch mytoken } % )
+    count 2 le not  % initial token makes problems could also be solved by calling token once before calling mytoken
+    { eval exch mytoken } % )
     if
   }
   ifelse

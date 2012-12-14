@@ -11,20 +11,20 @@
   
 } def
 
-/isOpenPTWithoutWhiteSpace
+/isOpenPTWithoutWhiteSpace % string (base string) integer (base counter) string (copy of base string for get) integer (counter for get) - string bool
 {
-   isEmpty
+   isEmpty % if string is already empty
    { false }
    {
       exch get dup dup
-      32 eq exch 9 eq
+      32 eq exch 9 eq % true if tab or blank current character in string on stack
       or {
          pop 
-         exch dup 3 1 roll exch
+         exch dup 3 1 roll exch % setup for call of isOpenPTWithoutWhiteSpace
          1 add dup 3 1 roll exch
          isOpenPTWithoutWhiteSpace
       }
-      { 40 eq exch pop }
+      { 40 eq exch pop } % true if char = '('
       ifelse
    }
    ifelse
