@@ -2,16 +2,16 @@
 (util.ps) run
 (eval.ps) run
 
-/mytoken {
+/parse {
   isOpenPT
   { token mark exch }
   { token }
   ifelse
 
-  { exch mytoken }
+  { exch parse }
   { 
     count 2 le not  % initial token makes problems could also be solved by calling token once before calling mytoken
-    { eval exch mytoken } % )
+    { eval exch parse } % )
     if
   }
   ifelse
@@ -34,7 +34,7 @@ print
    % printTokens
    % pop
 
-   mytoken
+   parse
    pstack
    clear
 } loop
