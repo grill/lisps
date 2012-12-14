@@ -1,0 +1,21 @@
+
+/dictionary <<(+) {add} (-) {sub} (if) {myif}>> def
+
+/myif % checks if the "if" has an else part and evaluates the correct output
+{
+   1 index dup true eq
+   exch false eq
+   or
+   { if }
+   { ifelse }
+   ifelse
+} def
+
+/eval % op p1..pn - evaluated
+{
+   ] aload length -1 roll % creates array, puts items behind it on stack, moves last arrayitem on top (operator)
+   dictionary begin % load dictionary for lisp commands
+   load % load ps-definition for given lisp commando
+   end  % remove lisp dictionary to avoid errors
+   exec % exectute ps-definition to evaluate input
+} def
