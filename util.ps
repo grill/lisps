@@ -1,11 +1,32 @@
 /isOpenPT % string - string bool
 {
-   dup length 0 eq not % isNotEmpty
+  
+   isEmpty not % isNotEmpty
    { % == (
-      dup 0 get
-      40 eq
+      dup 0 0 3 1 roll exch isOpenPTWithoutWhiteSpace
    }
    { false }
+   ifelse
+
+  
+} def
+
+/isOpenPTWithoutWhiteSpace
+{
+   isEmpty
+   { false }
+   {
+      exch get dup dup
+      32 eq exch 9 eq
+      or {
+         pop 
+         exch dup 3 1 roll exch
+         1 add dup 3 1 roll exch
+         isOpenPTWithoutWhiteSpace
+      }
+      { 40 eq exch pop }
+      ifelse
+   }
    ifelse
 } def
 
@@ -17,4 +38,9 @@
 /readLineStdin % - string
 {
    (%stdin) (r) file =string readline
+} def
+
+/isEmpty % string - string bool
+{
+   dup length 0 eq
 } def
