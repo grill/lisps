@@ -3,12 +3,46 @@
 
 /myif % checks if the "if" has an else part and evaluates the correct output
 {
-   1 index dup true eq
-   exch false eq
-   or
-   { if }
-   { ifelse }
+   makeExec % top item is everytime true part of if
+   
+   % checks if it is a if without else part
+   1 index dup true bool2token eq
+   exch false bool2token eq
+   or 
+   
+   {  % if without else part
+      exch token2bool dup 3 -1 roll % convert given token to bool and duplicates it
+      if 
+
+      % if bool was false create an empty result
+      not
+      { () }
+      if
+   }
+   {  % if with else part
+      3 -1 roll token2bool 3 1 roll % convert given token to bool
+      exch makeExec exch % make false part executable
+      ifelse
+   }
    ifelse
+} def
+
+/makeExec % (item - {item}) makes top item of stack to executable array
+{
+   mark exch ] cvx
+} def
+
+/token2bool % (token - bool) false until tokenform of true given
+{
+   true bool2token eq
+} def
+
+/bool2token % (bool - token) gives token form of true|false
+{
+   {(true)}
+   {(false)}
+   ifelse
+   token pop exch pop
 } def
 
 /eval % op p1..pn - evaluated
