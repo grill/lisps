@@ -1,5 +1,15 @@
 
-/dictionary <<(+) {myadd} (-) {mysub} (if) {myif}>> def
+/dictionary <<(+) {myadd} (-) {mysub} (if) {myif} (quote) {quote}>> def
+
+/eval % op p1..pn - evaluated
+{
+   ] dup /actual exch def aload length -1 roll % creates array, puts items behind it on stack, moves last arrayitem on top (operator)
+   %] aload length -1 roll % creates array, puts items behind it on stack, moves last arrayitem on top (operator)
+   dictionary begin % load dictionary for lisp commands
+   load % load ps-definition for given lisp commando
+   end  % remove lisp dictionary to avoid errors
+   exec % exectute ps-definition to evaluate input
+} def
 
 /myadd % evaluates output if 2 integers are given or an array for later evaluation (lambda functions)
 {
@@ -68,11 +78,19 @@
    token pop exch pop
 } def
 
-/eval % op p1..pn - evaluated
+/quote % (p[0] ... p[n] - [ p[0] ... p[n] ])
 {
-   ] aload length -1 roll % creates array, puts items behind it on stack, moves last arrayitem on top (operator)
-   dictionary begin % load dictionary for lisp commands
-   load % load ps-definition for given lisp commando
-   end  % remove lisp dictionary to avoid errors
-   exec % exectute ps-definition to evaluate input
+   actual length 1 sub dup % creates length of parameter
+   [ exch % sets marker between the "lengths"
+   3 add 1 roll % set the marker behind all parameters
+   {
+      exch % get parameter count behind top element
+      
+      dup isInteger not % test if its not an integer
+      { getTokenName } if % get name of token
+      
+      1 index 1 add 1 roll % get element in last position
+   } repeat % parameter count times
+   pop % drop length parameter
+   ] % create array so there is just 1 output element in eval
 } def
