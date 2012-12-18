@@ -1,5 +1,28 @@
 
-/dictionary <<(+) {add} (-) {sub} (if) {myif}>> def
+/dictionary <<(+) {myadd} (-) {mysub} (if) {myif}>> def
+
+/myadd
+{
+   2 copy % copy 2 parameter
+   isInteger exch isInteger and % check if both are integer
+   { add } % add the 2 integers
+   { mark {add} 4 2 roll ] } % create array for later evaluation
+   ifelse
+} def
+
+/mysub
+{
+   2 copy % copy 2 parameter
+   isInteger exch isInteger and % check if both are integer
+   { sub } % add the 2 integers
+   { mark {sub} 4 2 roll ] } % create array for later evaluation
+   ifelse
+} def
+
+/isInteger
+{
+   type 1 type eq % create "integertype" and compare
+} def
 
 /myif % checks if the "if" has an else part and evaluates the correct output
 {
