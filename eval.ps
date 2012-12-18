@@ -1,7 +1,7 @@
 
 /dictionary <<(+) {myadd} (-) {mysub} (if) {myif}>> def
 
-/myadd
+/myadd % evaluates output if 2 integers are given or an array for later evaluation (lambda functions)
 {
    2 copy % copy 2 parameter
    isInteger exch isInteger and % check if both are integer
@@ -10,7 +10,7 @@
    ifelse
 } def
 
-/mysub
+/mysub % evaluates output if 2 integers are given or an array for later evaluation (lambda functions)
 {
    2 copy % copy 2 parameter
    isInteger exch isInteger and % check if both are integer
@@ -19,7 +19,7 @@
    ifelse
 } def
 
-/isInteger
+/isInteger % (param - bool) tests if param is from type integer
 {
    type 1 type eq % create "integertype" and compare
 } def
