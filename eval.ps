@@ -1,5 +1,9 @@
+/vars << >> def
 
-/dictionary <<(+) {myadd} (-) {mysub} (if) {myif} (quote) {quote}>> def
+/dictionary <<
+(+) {myop add} (-) {myop sub} (*) {myop mul} (/) {myop div}
+(not) {getval not} (>) {myop gt} (<) {myop lt} (>=) {myop ge} (<=) {myop le} (=) {myop eq}
+(equal?) {myop eq} (if) {myif} (quote) {quote} (define) {mydef} (set!) {mydef} >> def
 
 /eval % op p1..pn - evaluated
 {
@@ -13,8 +17,36 @@
       end  % remove lisp dictionary to avoid errors
       exec % exectute ps-definition to evaluate input
    }
-   { pop () (command not known\n) print }
+   { 
+     dup vars exch known
+     { vars exch get }
+     { pop () (command not known\n) print}
+     ifelse
+   }
    ifelse
+} def
+
+/clearvars
+{
+   /vars << >> def
+} def
+
+/mydef
+{
+   vars 3 1 roll put
+   ()
+}def
+
+/getVal
+{
+  dup vars exch known
+  { vars exch get }
+  if
+} def
+
+/myop 
+{
+   getVal exch getVal
 } def
 
 /myadd % evaluates output if 2 integers are given or an array for later evaluation (lambda functions)
@@ -76,6 +108,11 @@
    {(false)}
    ifelse
    token pop exch pop
+} def
+
+/quote
+{
+   actual cvx
 } def
 
 /quote % (p[0] ... p[n] - [ p[0] ... p[n] ])

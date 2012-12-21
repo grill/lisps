@@ -10,31 +10,27 @@
 
   { exch parse }
   { 
-    count 2 le not  % initial token makes problems could also be solved by calling token once before calling mytoken
+    count 2 gt  % initial token makes problems could also be solved by calling token once before calling mytoken
     { eval exch parse } % )
     if
   }
   ifelse
 } def
 
-(Lisp Interpreter by Alex and Gabriel
-)
-print
+/lisps
 {
-   % print
-   flush
-   readLineStdin % - string bool
-   not
-   % (%stdin) (r)file token
-   { pop exit }
-   if
-   % isOpenPT
-   % { token pop exch pop mark exch pstack (\n\n\nasdfasdf\n) print  mytoken }
-   % if
-   % printTokens
-   % pop
-
-   parse
-   pstack
-   clear
-} loop
+   (Lisp Interpreter by Alex and Gabriel\n)
+   print
+   {
+   (lis.ps >) print flush
+      readLineStdin % - string bool
+      not
+      { pop exit }
+      if
+      
+      parse
+      pstack
+      clear
+   } loop
+   clearvars
+} def
