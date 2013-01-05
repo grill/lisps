@@ -11,6 +11,26 @@
   
 } def
 
+/isMark {
+  dup mark eq
+} def
+
+/genStr {
+  counttomark dup string exch { dup 3 -1 roll exch counttomark 3 sub 3 -1 roll put } repeat exch pop
+} def
+
+/isOPT {
+   dup 40 eq
+} def
+
+/isCPT {
+   dup 41 eq
+} def
+
+/isWhiteChar {
+   dup dup 32 eq exch 9 eq or
+} def
+
 /isOpenPTWithoutWhiteSpace % string (base string) integer (base counter) string (copy of base string for get) integer (counter for get) - string bool
 {
    isEmpty % if string is already empty

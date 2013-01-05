@@ -3,48 +3,68 @@
 /dictionary <<
 (+) {myop add} (-) {myop sub} (*) {myop mul} (/) {myop div}
 (not) {getval not} (>) {myop gt} (<) {myop lt} (>=) {myop ge} (<=) {myop le} (=) {myop eq}
-(equal?) {myop eq} (if) {myif} (quote) {quote} (define) {mydef} (set!) {mydef} >> def
+(equal?) {myop eq} (if) {myif2} (quote) {quote} (define) {mydef} (set!) {mydef} (begin) {begin} >> def
+
+% doesn't work right now, marks are needed
+/begin {
+  {
+    dup type {} type eq
+    {
+      exec
+      dup type {} type eq not
+      { pop }
+      if
+    }
+    { exit }
+    ifelse
+  } loop
+} def
+
+/getVar {
+  vars exch get cvi
+} def
 
 /eval % op p1..pn - evaluated
 {
-   ] dup /actual exch def aload length -1 roll % creates array, puts items behind it on stack, moves last arrayitem on top (operator)
+   % ] dup /actual exch def aload length -1 roll % creates array, puts items behind it on stack, moves last arrayitem on top (operator)
+   counttomark -1 roll
 
    dup dictionary exch known % test if command is known
-   
+   { dictionary exch get }
    {
-      dictionary begin % load dictionary for lisp commands
-      load % load ps-definition for given lisp commando
-      end  % remove lisp dictionary to avoid errors
-      exec % exectute ps-definition to evaluate input
-   }
-   { 
      dup vars exch known
-     { vars exch get }
-     { pop () (command not known\n) print}
+     { { getVar } }
+     { { cvi } }
      ifelse
    }
    ifelse
+   0 ] cvx dup dup length 1 sub {exec} putinterval
 } def
 
-/clearvars
+/clearvars % clear var dict
 {
-   /vars << >> def
+   /vars << >> def 
 } def
 
-/mydef
+/mydef % name value - _ (add var to dict)
 {
    vars 3 1 roll put
    ()
 }def
 
-/getVal
+/getVal % value or varname - value
 {
   dup vars exch known
-  { vars exch get }
-  if
+  { getVar }
+  { dup type {} type eq
+   { exec }
+   { cvi }
+   ifelse
+  }
+  ifelse
 } def
 
-/myop 
+/myop % 2x geVal
 {
    getVal exch getVal
 } def
@@ -92,6 +112,15 @@
    ifelse
 } def
 
+
+/myif2 % checks if the "if" has an else part and evaluates the correct output
+{
+  3 -1 roll
+  exec
+  3 1 roll
+  ifelse
+} def
+
 /makeExec % (item - {item}) makes top item of stack to executable array
 {
    mark exch ] cvx
@@ -110,7 +139,7 @@
    token pop exch pop
 } def
 
-/quote
+/quote % cmd... - {cmd...}
 {
    actual cvx
 } def

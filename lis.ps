@@ -2,19 +2,39 @@
 (util.ps) run
 (eval.ps) run
 
-/parse {
-  isOpenPT
-  { token mark exch }
-  { token }
-  ifelse
+/pdict <<
+  40 { count 0 eq { mark } { isMark not { mark } if } ifelse mark }                      % '('
+  41 { isMark { pop } { genStr } ifelse eval mark } % ')'
+  32 { isMark not { genStr mark } if } % ' '
+>> def
 
-  { exch parse }
-  { 
-    count 2 gt  % initial token makes problems could also be solved by calling token once before calling mytoken
-    { eval exch parse } % )
+/execute {
+  
+} def
+
+/parse {
+  {
+    dup pdict exch known
+    { pdict exch get exec }
     if
-  }
-  ifelse
+  } forall
+
+  pop
+
+  % execute
+  exec
+
+%  {
+%    count 0 eq
+%    { exit }
+%    if
+
+%    dup type {} type eq not
+%    { exit }
+%    if
+
+%    exec
+%  } loop
 } def
 
 /lisps
@@ -27,10 +47,10 @@
       not
       { pop exit }
       if
-      
+
       parse
-      pstack
-      clear
+      pstack % print stack
+      clear % clear stack
    } loop
    clearvars
 } def
