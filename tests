@@ -1,0 +1,6 @@
+(if true (+ 1 1) (+ 1 0))
+(if false (+ 1 1) (+ 1 0))
+(define x 2)
+(* x x)
+(define y 3)
+(+ y x)
