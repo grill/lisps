@@ -3,7 +3,7 @@
 (eval.ps) run
 
 /pdict <<
-  40 { count 0 eq { mark } { isMark not { mark } if } ifelse mark }                      % '('
+  40 { count 0 eq { mark } { isMark not { mark } if } ifelse mark } % '('
   41 { isMark { pop } { genStr } ifelse eval mark } % ')'
   32 { isMark not { genStr mark } if } % ' '
 >> def
@@ -22,7 +22,7 @@
   pop
 
   % execute
-  exec
+  % exec
 
 %  {
 %    count 0 eq
