@@ -64,3 +64,45 @@
 {
    dup length 0 eq
 } def
+
+/gotoline % file line# - file
+{
+  {
+    dup =string readline pop pop
+  } repeat
+} def
+
+/test % test# - bool
+{
+   (Lisp Interpreter Tester by Alex and Gabriel\n)
+   print
+   dup =string cvs print (.Test\n) print flush
+   1 sub
+   {
+      dup (test/tests) (r) file exch readLineAtNumber  % - string bool
+      not
+      { pop exit }
+      if
+      % line# string
+      parse
+      % line# erg
+      dup type 1 type eq
+      % line# erg bool
+      (test/ergebnisse) (r) file 4 -1 roll readLineAtNumber  % - string bool
+      not
+      { pop exit }
+      if
+      % erg bool erg2
+      exch { cvi } if
+      pstack % print stack
+      eq
+      % bool
+      (----------\n) print pstack
+      clear % clear stack
+   } exec %loop
+} def
+
+/readLineAtNumber % file line# - string bool
+{
+  gotoline =string readline
+} def
