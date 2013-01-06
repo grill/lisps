@@ -19,22 +19,9 @@
     if
   } forall
 
-  pop
-
-  % execute
-  % exec
-
-%  {
-%    count 0 eq
-%    { exit }
-%    if
-
-%    dup type {} type eq not
-%    { exit }
-%    if
-
-%    exec
-%  } loop
+  count 0 gt
+  { pop exec }
+  if
 } def
 
 /lisps

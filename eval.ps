@@ -1,12 +1,14 @@
 /vars << >> def
 
 /dictionary <<
-(+) {myop add} (-) {myop sub} (*) {myop mul} (/) {myop div}
-(not) {getval not} (>) {myop gt} (<) {myop lt} (>=) {myop ge} (<=) {myop le} (=) {myop eq}
-(equal?) {myop eq} (if) {myif2} (quote) {quote} (define) {mydef} (set!) {mydef} (begin) {begin} >> def
+(+) {{myop add}} (-) {{myop sub}} (*) {{myop mul}} (/) {{myop div}}
+(not) {{getval not}} (>) {{myop gt}} (<) {{myop lt}} (>=) {{myop ge}}
+(<=) {{myop le}} (=) {{myop eq}} (equal?) {{myop eq}} (if) {{myif2}}
+(quote) {{quote}} (define) {{mydef}} (set!) {{mydef}} (begin) {{mybegin}}
+ >> def
 
 % doesn't work right now, marks are needed
-/begin {
+/mybegin {
   {
     dup type {} type eq
     {
@@ -30,7 +32,7 @@
    counttomark -1 roll
 
    dup dictionary exch known % test if command is known
-   { dictionary exch get }
+   { dictionary exch get exec }
    {
      dup vars exch known
      { { getVar } }
