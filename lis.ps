@@ -2,26 +2,63 @@
 (util.ps) run
 (eval.ps) run
 
-/pdict <<
+/pdict_states <<
+  (lambda) { /pdict pdict_lambda def mark }
+  (quote)  { /pdict pdict_quote def }
+>> def
+
+/pdict_default <<
   40 { count 0 eq { mark } { isMark not { mark } if } ifelse mark } % '('
-  41 { isMark { pop } { genStr } ifelse eval mark } % ')'
+  41 { isMark { pop } { genStr transit } ifelse eval mark } % ')'
+  32 { isMark not { genStr transit mark } if } % ' '
+>> def
+
+/pdict_lambda <<
+  40 {  } % '(' do not delete
+  41 { isMark { pop } { genStr } ifelse ] mark /pdict pdict_default def } % ')'
   32 { isMark not { genStr mark } if } % ' '
 >> def
 
-/execute {
-  
+/open_brackets 1 def
+
+/pdict_quote <<
+  40 { /open_brackets open_brackets 1 add def 40 } % '('
+  41 { % ')'
+        /open_brackets open_brackets 1 sub def
+        open_brackets 0 eq
+        {
+          /open_brackets open_brackets 1 add def
+          genStr eval mark
+          /pdict pdict_default def
+        }
+        { 41 } ifelse
+     }
+>> def
+
+/pdict pdict_default def
+
+/transit {
+  dup pdict_states exch known
+  {
+    dup pdict_states exch get exec
+  } if
 } def
 
 /parse {
+  dup 0 get 40 ne % if the stmnt starts with no brackets
+  { getVal } 
   {
-    dup pdict exch known
-    { pdict exch get exec }
-    if
-  } forall
+    {
+      dup pdict exch known
+      { pdict exch get exec }
+      if
+    } forall
 
-  count 0 gt
-  { pop exec }
-  if
+    open_brackets 1 eq
+    { pop clear_par_arr pstack (..............\n) print exec } % clear_par_arr is here just for testing
+    { (Some brackets have not been closed\n) print }
+    ifelse
+  } ifelse
 } def
 
 /lisps
@@ -35,8 +72,12 @@
       { pop exit }
       if
 
-      parse
-      pstack % print stack
+      dup () ne % if no empty stmnt
+      { parse }
+      if
+      dup () ne % if not None
+      { (================================\n) print pstack } % print stack
+      if
       clear % clear stack
    } loop
    clearvars

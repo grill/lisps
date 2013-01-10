@@ -1,6 +1,34 @@
 
 ################ Tests for lis.py and lispy.py
 
+(define twice (lambda (x) (* 2 x)))
+
+(define compose (lambda (f g) (lambda (x) (f (g x))))) # does not work because of names
+
+(define compose (lambda (f g) (lambda (y) (f (g y))))) # works
+
+((compose twice twice) 5)
+
+(define y (compose twice twice))
+
+{(twice) {{{(2) (x) {myop mul} exec} [(x)] isCall 16 array dup 0 {setpars pstack (3-----\n) print getVal (4-----\n) print pstack (5-----\n) print clearpars (6-----\n) print pstack (7-----\n) print} putinterval cvx {exch lambda2 append_par_arr} ifelse} exec} {mydef2} exec} exec
+(f) (twice) mydef2
+(g) (twice) mydef2
+(x) 1 mydef2
+clear
+
+{{(x) (g) {callfun} exec} (f) {callfun} exec} # endlosschleife
+
+(f) {callfun} # is repleaced for a function that overrides x
+# I mean this here: x = {(x) (g) {callfun} exec}
+
+(x) {(x) (g) {callfun} exec} mydef2
+
+(2) (x) {myop mul} exec # endlosschleife
+
+(x) getVal 
+
+
 lis_tests = [
     ("(quote (testing 1 (2.0) -3.14e159))", ['testing', 1, [2.0], -3.14e159]),
     ("(+ 2 2)", 4),
@@ -8,11 +36,12 @@ lis_tests = [
     ("(if (> 6 5) (+ 1 1) (+ 2 2))", 2),
     ("(if (< 6 5) (+ 1 1) (+ 2 2))", 4),
     ("(define x 3)", None), ("x", 3), ("(+ x x)", 6),
-    ("(begin (define x 1) (set! x (+ x 1)) (+ x 1))", 3),
+    ("(begin (define x 1) (set! x (+ x 1)) (+ x 1))", 3), # not working
     ("((lambda (x) (+ x x)) 5)", 10),
     ("(define twice (lambda (x) (* 2 x)))", None), ("(twice 5)", 10),
-    ("(define compose (lambda (f g) (lambda (x) (f (g x)))))", None),
-    ("((compose list twice) 5)", [10]),
+    ("(define compose (lambda (f g) (lambda (x) (f (g x)))))", None),		# not working
+    ("((compose twice twice) 5)", [10]), 					# not working
+    ("((compose list twice) 5)", [10]), 					# not working
     ("(define repeat (lambda (f) (compose f f)))", None),
     ("((repeat twice) 5)", 20), ("((repeat (repeat twice)) 5)", 80),
     ("(define fact (lambda (n) (if (<= n 1) 1 (* n (fact (- n 1))))))", None),
