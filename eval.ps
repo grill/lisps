@@ -6,10 +6,53 @@
 (not) {{getval not}} (>) {{myop gt}} (<) {{myop lt}} (>=) {{myop ge}}
 (<=) {{myop le}} (=) {{myop eq}} (equal?) {{myop eq}} (if) {{myif2}}
 (quote) {{quote}} (define) {{mydef2}} (set!) {{myset2}} (begin) { prebegin {mybegin}}
-(equal?) {{eq}} (eq?) {{}} (length) {{getval length}} (cons) {{}} (car) {{}}
-(cdr) {{}} (append) {{}} (list) {{}} (list?) {{}} (null?) {{}}
+(equal?) {{eq}} (eq?) {{eq}} (length) {{getVal length}} (cons) {{cons}} (car) {{getVal 0 get}}
+(cdr) {{cdr}} (append) {{append}} (list) { list {}} (list?) {{isList}} (null?) {{null}}
 (lambda) {lambda2}
  >> def
+
+/append {
+   getVal exch getVal mark 3 1 roll % p1 p2 -- mark val2 val1
+   aload pop % mark val2 e1 e2 e3 ....
+   counttomark -1 roll % mark val1_e1 val1_e2 val1_e3 ... val2
+   aload pop % mark val1_e1 ... val2_e1 val2_e2 ...
+   ]
+} def
+
+% ??? should be fixed with "nil" as parameter ??? 
+/null {
+   getVal dup type [] type eq
+   { length 0 eq }
+   { pop false }
+   ifelse
+} def
+
+/isList {
+   getVal type [ ] type eq
+} def
+
+/cons {
+   mark 3 1 roll
+   exch getVal %first we have to getVal the first parameter (to convert it to a number)
+   exch getVal %then we have to getVal the list (maybe its a variable)
+   aload pop %store elements of the list on stack and pop list
+   ] %create new list with the new element on the beginning
+} def
+
+/cdr {
+   mark exch %set mark on begin
+   getVal %get list if its a variable
+   aload pop %get only the items
+   counttomark -1 roll %get first item on top
+   pop ] %remove first item and store items into an array again
+} def
+
+/list {
+   ] mark exch % make an array of all paramters
+   mark exch
+   { getVal } forall
+   ]
+} def
 
 /mybegin {
    mark exch % set mark where this commands parameter begins
