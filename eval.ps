@@ -5,26 +5,22 @@
 (+) {{myop add}} (-) {{myop sub}} (*) {{myop mul}} (/) {{myop div}}
 (not) {{getval not}} (>) {{myop gt}} (<) {{myop lt}} (>=) {{myop ge}}
 (<=) {{myop le}} (=) {{myop eq}} (equal?) {{myop eq}} (if) {{myif2}}
-(quote) {{quote}} (define) {{mydef2}} (set!) {{myset2}} (begin) {{mybegin}}
+(quote) {{quote}} (define) {{mydef2}} (set!) {{myset2}} (begin) { prebegin {mybegin}}
 (equal?) {{eq}} (eq?) {{}} (length) {{getval length}} (cons) {{}} (car) {{}}
 (cdr) {{}} (append) {{}} (list) {{}} (list?) {{}} (null?) {{}}
 (lambda) {lambda2}
  >> def
 
-% doesn't work right now, marks are needed
 /mybegin {
-  {
-    dup type {} type eq
-    {
-      exec
-      dup type {} type eq not
-      { pop }
-      if
-    }
-    { exit }
-    ifelse
-  } loop
+   mark exch % set mark where this commands parameter begins
+   { getVal } forall % evaluate each subexpression
+   ] dup length 1 sub get % make array of all outputs and get last one
 } def
+
+/prebegin {
+   ] mark exch % make an array of all parameters begin will get and recreate the used mark
+} def
+
 /array_to {
   dup 0 ge
   { mark exch dup { dup 1 sub } repeat ] }
@@ -204,6 +200,7 @@
      % ifelse
    }
    ifelse
+   %(asdfasdfasdf) print pstack
    0 ] cvx dup dup length 1 sub {exec} putinterval
 } def
 
