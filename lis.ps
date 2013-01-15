@@ -1,5 +1,6 @@
 %!
 (util.ps) run
+(lambda.ps) run
 (eval.ps) run
 
 /pdict_states <<
@@ -55,7 +56,7 @@
     } forall
 
     open_brackets 1 eq
-    { pop clear_par_arr pstack (..............\n) print exec } % clear_par_arr is here just for testing
+    { pop pstack exec } % clear_par_arr is here just for testing
     { (Some brackets have not been closed\n) print }
     ifelse
   } ifelse

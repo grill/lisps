@@ -1,14 +1,13 @@
 /vars << >> def
-/par_arr [] def
 
 /dictionary <<
 (+) {{myop add}} (-) {{myop sub}} (*) {{myop mul}} (/) {{myop div}}
 (not) {{getval not}} (>) {{myop gt}} (<) {{myop lt}} (>=) {{myop ge}}
-(<=) {{myop le}} (=) {{myop eq}} (equal?) {{myop eq}} (if) {{myif2}}
-(quote) {{quote}} (define) {{mydef2}} (set!) {{myset2}} (begin) {{mybegin}}
+(<=) {{myop le}} (=) {{myop eq}} (equal?) {{myop eq}} (if) {{myif}}
+(quote) {{quote}} (define) {{mydef}} (set!) {{myset}} (begin) {{mybegin}}
 (equal?) {{eq}} (eq?) {{}} (length) {{getval length}} (cons) {{}} (car) {{}}
 (cdr) {{}} (append) {{}} (list) {{}} (list?) {{}} (null?) {{}}
-(lambda) {lambda2}
+(lambda) {lambda}
  >> def
 
 % doesn't work right now, marks are needed
@@ -25,169 +24,6 @@
     ifelse
   } loop
 } def
-/array_to {
-  dup 0 ge
-  { mark exch dup { dup 1 sub } repeat ] }
-  { [] }
-  ifelse
-} def
-
-/add_par { % val var - var val (par_arr added par)
-  exch 2 array astore dup
-    pstack (........\n) print
-  par_arr aload length -1 roll
-    pstack (........\n) print
-  par_arr length 1 add array astore
-  /par_arr exch def
-  aload pop
-} def
-
-/printdict {
- mark exch { } forall pstack ] pop
-} def
-
-/setpars {
-  dup length 2 add 3 -1 roll exch 1 roll
-  pstack (asdfasdfasdf\n) print
-
-  dup dup length 2 add 1 roll
-  length array astore
-  dup length 1 sub array_to
-  {
-    % var_array val_array num
-    dup 3 -1 roll dup 4 1 roll exch get
-    % var_array val_array num val
-    exch 4 -1 roll dup 5 1 roll exch get
-    % var_array val_array val var
-    add_par
-    mydef3 % var val
-    pop
-    % exch vars 3 1 roll put
-    % var_array val_array
-  } forall
-  pop
-
-  dup type [] type eq
-  { dup length 0 eq
-    { pop } if
-  } if
-
-  count 3 ge {
-    3 -1 roll dup /call eq
-    { 3 1 roll count 1 roll }
-    { 3 1 roll exch }
-    ifelse
-  }
-  { exch }
-  ifelse
-} def
-
-/pop_var {
-    dup vars exch get
-    % varname varvalue
-    dup length 0 ne
-    {
-      aload length 1 sub exch pop array
-      %pstack
-      %(1---\n) print
-      astore
-      % varname varvalues(len-1)
-      vars 3 1 roll
-      %pstack
-      %(1---\n) print
-      put
-    } if
-} def
-
-/append_par_arr { % appends the par execution array to a lambda
-   par_arr length 0 ne {
-     dup length 6 add array
-     dup 0
-     { null
-       { aload pop mydef3 pop }
-       forall
-     } dup 0 par_arr put putinterval
-     dup 3 4 -1 roll putinterval
-     dup dup length 3 sub
-     { null
-       { 0 get pop_var } forall
-     } dup 0 par_arr put putinterval cvx
-
-    % remove vars again
-    % dup 0 5 -1 roll putinterval pstack
-    % dup 3 -1 roll
-
-    clear_par_arr
-  } if
-} def
-
-/clear_par_arr {
-  /par_arr 0 array def
-} def
-
-/clearpars {
-  exch { pop_var } forall
-} def
-
-/isCall {
-  count exch dup length 2 add 3 -1 roll lt
-  { 3 -1 roll /call eq }
-  { false }
-  ifelse
-} def
-
-% (lambda (var...) exp) => [var..] { exp }
-/lambda2
-{
-  %pstack
-  %(1---\n) print
-  12 array dup 0 % workaround
-  % postscript fail --> it seems that postscript uses always the same reference here
-  {
-    %/function pop
-    null
-    null % array of par_names
-    isCall
-    16 array dup 0
-    {
-      setpars
-     % null % function that needs to be executed
-      pstack (3-----\n) print 
-      getVal (4-----\n) print 
-      pstack (5-----\n) print 
-      clearpars (6-----\n) print 
-      pstack (7-----\n) print 
-    } putinterval cvx
-    % dup 1 null put
-    {
-      % Composition here
-      exch lambda2
-      append_par_arr
-      % pop (function)
-    }
-    ifelse
-  } putinterval cvx
- % pstack
-  %(2---\n) print
-  dup 1 5 -1 roll 
-  %pstack
-  %(3---\n) print
-  put
-  dup 0 4 -1 roll
-  %pstack
-  %(4---\n) print
-  put
-  % pstack
-  % (5---\n) print
-} def
-
-/callfun {
-  /call exch
-  knownVar
-  { getVar3 }
-  { exec }
-  ifelse
-} def
 
 /eval % op p1..pn - evaluated
 {
@@ -197,38 +33,10 @@
    dup dictionary exch known % test if command is known
    { dictionary exch get exec }
    {
-     { callfun }
-     % dup vars exch known
-     % { { getVar2 } }
-     % { { cvi } }
-     % ifelse
+     { call_fun }
    }
    ifelse
    0 ] cvx dup dup length 1 sub {exec} putinterval
-} def
-
-/getVar3 {
-  pstack
-  vars exch get
-  pstack
-  dup length 1 sub get
-  dup type {} type eq
-  { exec }
-  { cvi exch pop }
-  ifelse
-} def
-
-/getVar2 {
-  vars exch get
-  dup length 1 sub get
-  dup type {} type eq
-  { exec }
-  { cvi }
-  ifelse
-} def
-
-/getVar {
-  vars exch get cvi
 } def
 
 /clearvars % clear var dict
@@ -236,7 +44,7 @@
    /vars << >> def 
 } def
 
-/myset2 { % myset2 chrashes when var is not defined or wrong type (currently not checked)
+/myset { % myset chrashes when var is not defined or wrong type (currently not checked)
   knownVar
   { vars exch get dup length 1 sub get } if
   % { vars exch get } if
@@ -249,36 +57,7 @@
   ()
 } def
 
-/mydef3 {
-  knownVar
-  { vars exch get dup length 1 sub get } if
-  % { vars exch get } if
-
-  exch dup 3 1 roll mark exch % mark exch 3 -1 roll dup 4 1 roll
-  
-     % pstack
-     % (2---\n) print
-  knownVar
-  { vars exch get aload 
-  
-      %pstack
-      %(2---\n) print
-  pop }
-  { pop }
-  ifelse
-  counttomark 2 add -1 roll
-      %pstack
-      %(2---\n) print
-      ]
-  vars 3 1 roll 
-  
-      %pstack
-      %(2---\n) print
-  put
-  ()
-} def
-
-/mydef2 {
+/mydef {
   knownVar
   { vars exch get dup length 1 sub get } if
 
@@ -293,13 +72,22 @@
   ()
 } def
 
-/mydef % name value - _ (add var to dict)
+/myif % checks if the "if" has an else part and evaluates the correct output
 {
-   knownVar
-   { vars exch get }
-   if
-   vars 3 1 roll put
-   ()
+  3 -1 roll
+  exec
+  3 1 roll
+  dup type {} type ne
+  { mark exch ] cvx }
+  if
+  exch
+
+  dup type {} type ne
+  { mark exch ] cvx }
+  if
+  exch
+
+  ifelse
 } def
 
 /knownVar
@@ -312,12 +100,46 @@
   ifelse
 } def
 
+/call_fun {
+  /call exch
+  knownVar
+  {
+    vars exch get
+    dup length 1 sub get
+    exec_exp
+  }
+  { exec_exp }
+  ifelse
+} def
+
+/exec_exp {
+  dup type {} type eq
+  { exec }
+  { cvi exch pop }
+  ifelse
+} def
+
+/getVar {
+  vars exch get
+  dup length 1 sub get
+  dup type {} type eq
+  { exec conv_str }
+  { cvi }
+  ifelse
+} def
+
+/conv_str {
+  dup () ne exch dup type () type eq 3 -1 roll and
+  { cvi }
+  if
+} def
+
 /getVal % value or varname - value
 {
   knownVar
-  { getVar2 }
+  { getVar }
   { dup type {} type eq
-   { exec }
+   { exec conv_str }
    { cvi }
    ifelse
   }
@@ -326,8 +148,11 @@
 
 /myop % 2x geVal
 {
-   getVal exch getVal exch
+   getVal exch
+   getVal exch
 } def
+
+% --------------------   old   ------------------
 
 /myadd % evaluates output if 2 integers are given or an array for later evaluation (lambda functions)
 {
@@ -352,7 +177,7 @@
    type 1 type eq % create "integertype" and compare
 } def
 
-/myif % checks if the "if" has an else part and evaluates the correct output
+/myif2 % checks if the "if" has an else part and evaluates the correct output
 {
    makeExec % top item is everytime true part of if
    % checks if it is a if without else part
@@ -370,15 +195,6 @@
       ifelse
    }
    ifelse
-} def
-
-
-/myif2 % checks if the "if" has an else part and evaluates the correct output
-{
-  3 -1 roll
-  exec
-  3 1 roll
-  ifelse
 } def
 
 /makeExec % (item - {item}) makes top item of stack to executable array

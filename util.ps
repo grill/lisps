@@ -1,14 +1,13 @@
-/isOpenPT % string - string bool
-{
-  
-   isEmpty not % isNotEmpty
-   { % == (
-      dup 0 0 3 1 roll exch isOpenPTWithoutWhiteSpace
-   }
-   { false }
-   ifelse
+% generates an array from num to zero
+/array_to { % num - num num-1 num-2 ... 0
+  dup 0 ge
+  { mark exch dup { dup 1 sub } repeat ] }
+  { [] }
+  ifelse
+} def
 
-  
+/printdict {
+ mark exch { } forall pstack ] pop
 } def
 
 /isMark {
@@ -18,6 +17,18 @@
 /genStr {
   counttomark dup string exch { dup 3 -1 roll exch counttomark 3 sub 3 -1 roll put } repeat exch pop
 } def
+
+/isOpenPT % string - string bool
+{
+  
+   isEmpty not % isNotEmpty
+   { % == (
+      dup 0 0 3 1 roll exch isOpenPTWithoutWhiteSpace
+   }
+   { false }
+   ifelse
+} def
+
 
 /isOPT {
    dup 40 eq

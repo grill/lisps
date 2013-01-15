@@ -9,16 +9,16 @@
 (begin (define x 1) (set! x (+ x 1)) (+ x 1))
 ((lambda (x) (+ x x)) 5)
 (define twice (lambda (x) (* 2 x)))
-  (twice 5)
-(define compose (lambda (f g) (lambda (y) (f (g y)))))
+(twice 5)
+(define compose (lambda (f g) (lambda (x) (f (g x)))))
 ((compose twice twice) 5)
 ((compose list twice) 5)
 (define repeat (lambda (f) (compose f f)))
 ((repeat twice) 5)
-  ((repeat (repeat twice)) 5)
+((repeat (repeat twice)) 5)						# fail aus unerfindlichen gruenden
 (define fact (lambda (n) (if (<= n 1) 1 (* n (fact (- n 1))))))
 (fact 3)
-(fact 50)
+(fact 50) 								# zu gross fuer int
 (define abs (lambda (n) ((if (> n 0) + -) 0 n)))
    (list (abs -3) (abs 0) (abs 3))", [3, 0, 3]),
 (define combine (lambda (f)
