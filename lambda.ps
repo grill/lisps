@@ -1,0 +1,166 @@
+/par_arr [] def
+
+/set_par { % varname value - (vars parameter added)
+  pstack (set par -------------------\n) print
+
+  % call_fun
+
+  %knownVar
+  %{ vars exch get dup length 1 sub get } if
+  %pstack (get par -------------------\n) print
+
+  %dup type {} type eq
+  %{ exec }
+  %if
+  %pstack (exec par -------------------\n) print
+
+  exch dup 3 1 roll mark exch
+  % check if varname already exists in context
+  knownVar
+  { % update context
+    vars exch get aload pop
+  }
+  { pop }
+  ifelse
+  counttomark 2 add -1 roll
+  ]
+  vars 3 1 roll
+  pstack (uuuuuuuuuuuuuuuuu\n) print
+  put
+} def
+
+% adds a parameter to the parameter array
+/add_par { % value varname - varname value - par_arr parameter added
+  exch
+
+  knownVar
+  { vars exch get dup length 1 sub get } if
+  pstack (get par -------------------\n) print
+
+  dup type {} type eq
+  { exec }
+  if
+
+  2 array astore dup
+  par_arr aload length -1 roll
+  par_arr length 1 add array astore
+  /par_arr exch def
+  aload pop
+} def
+
+% printes the elements of a dictionary
+/print_dict { % dict- 
+ mark exch { } forall pstack ] pop
+} def
+
+% sets the values of a parameter
+/set_pars { % value1 value2 ... [parname1, parname2, ...] - everything is saved to the vars dict
+  dup length 2 add 3 -1 roll exch 1 roll
+
+  dup dup length 2 add 1 roll
+  length array astore
+  dup length 1 sub array_to
+  {
+    dup 3 -1 roll dup 4 1 roll exch get
+    exch 4 -1 roll dup 5 1 roll exch get
+    add_par set_par
+  } forall
+  pop
+
+  dup type [] type eq
+  { dup length 0 eq
+    { pop } if
+  } if
+
+  count 3 ge {
+    3 -1 roll dup /call eq
+    { 3 1 roll count 1 roll }
+    { 3 1 roll exch }
+    ifelse
+  }
+  { exch }
+  ifelse
+} def
+
+% Remove pars from par_arr after function call ends
+/pop_par { % varname - varname (Parameter is removed from context)
+    par_arr length 0 ne
+    {
+       par_arr aload exch pop
+       length 1 sub array
+       astore /par_arr exch def
+    } if
+} def
+
+% Remove pars from vars after function call ends
+/pop_var { % varname - Parameter is removed from context
+    dup vars exch get
+    % varname varvalue
+    dup length 0 ne
+    {
+      aload length 1 sub exch pop array
+      astore
+      % varname varvalues(len-1)
+      vars 3 1 roll
+      put
+    } if
+} def
+
+% appends the par execution array to a lambda, for currying
+/append_par_arr { % { lambda } - { lambda + parameter values }
+   par_arr length 0 ne {
+     dup length 6 add array
+     dup 0
+     { null
+       { aload pop set_par }
+       forall
+     } dup 0 par_arr put putinterval
+     dup 3 4 -1 roll putinterval
+     dup dup length 3 sub
+     { null
+       { 0 get pop_par pop_var } forall
+     } dup 0 par_arr put putinterval cvx
+  } if
+} def
+
+/clearpars {
+  exch { pop_par pop_var } forall
+} def
+
+% checks if a function call mark has been set
+/isCall {
+  count exch dup length 2 add 3 -1 roll lt
+  { 
+    3 -1 roll dup /call eq
+    { pop true }
+    { 3 1 roll false }
+    ifelse
+  }
+  { false }
+  ifelse
+} def
+
+% (lambda (var...) exp) => [var..] { exp }
+/lambda {
+  12 array dup 0 % workaround
+  % postscript fail --> it seems that postscript uses always the same reference here
+  {
+    null % function that is executed
+    null % array of par_names
+    isCall
+    3 array dup 0
+    {
+      set_pars
+      getVal
+      clearpars
+    } putinterval cvx
+    {
+      % Composition here
+      exch lambda
+      append_par_arr
+    }
+    ifelse
+  } putinterval cvx
+  dup 1 5 -1 roll put
+  dup 0 4 -1 roll put
+} def
