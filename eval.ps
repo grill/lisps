@@ -8,7 +8,7 @@
 (lambda) {lambda}
 (begin) { prebegin {mybegin}} (equal?) {{eq}} (eq?) {{eq}}
 (length) {{getVal length}} (cons) {{cons}} (car) {{getVal 0 get}}
-(cdr) {{cdr}} (append) {{append}} (list) { list {}} (list?) {{isList}}
+(cdr) {{cdr}} (append) {{append}} (list) { list } (list?) {{isList}}
 (null?) {{null}}
  >> def
 
@@ -50,9 +50,11 @@
 
 /list {
    ] mark exch % make an array of all paramters
+   {
    mark exch
    { getVal } forall
    ]
+   }
 } def
 
 /mybegin {
