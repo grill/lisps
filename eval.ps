@@ -94,7 +94,7 @@
 
   exch dup 3 1 roll mark exch % mark exch 3 -1 roll dup 4 1 roll
   vars exch get aload pop pop
-  counttomark 2 add -1 roll dup ]
+  counttomark 2 add -1 roll getVal ]
 
   vars 3 1 roll put
   ()
@@ -158,7 +158,14 @@
 /exec_exp {
   dup type {} type eq
   { exec }
-  { cvi exch pop }
+  {
+    dup dictionary exch known % test if command is known
+    { dictionary exch get exec exec }
+    { (cvi - exec_exp\n) print cvi }
+    ifelse
+
+    exch pop
+  }
   ifelse
 } def
 
@@ -167,13 +174,24 @@
   dup length 1 sub get
   dup type {} type eq
   { exec conv_str }
-  { cvi }
+  { (cvi - getVar\n) print cvi }
   ifelse
 } def
 
 /conv_str {
   dup () ne exch dup type () type eq 3 -1 roll and
-  { cvi }
+  { 
+    exch dup /call eq
+    {
+      pop % remove /call
+      dup dictionary exch known % test if command is known
+      { dictionary exch get exec exec }
+      { (cvi - conv_str1\n) print cvi }
+      ifelse
+    }
+    { exch  (cvi - conv_str2\n) print  cvi }
+    ifelse
+  }
   if
 } def
 
@@ -183,7 +201,26 @@
   { getVar }
   { dup type {} type eq
    { exec conv_str }
-   { cvi }
+   {
+    exch dup /call eq
+    { pop }
+    { exch }
+    ifelse
+
+    dup dictionary exch known % test if command is known
+    { dictionary exch get exec exec }
+    { (cvi - getVal\n) print
+      dup /call eq
+      { pop getVal }
+      {
+        dup type () type eq
+        { cvi }
+        if
+      }
+      ifelse % remove /call
+    }
+    ifelse
+   }
    ifelse
   }
   ifelse

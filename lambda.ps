@@ -1,4 +1,5 @@
 /par_arr [] def
+/par_names [] def
 
 /set_par { % varname value - (vars parameter added)
   pstack (set par -------------------\n) print
@@ -42,7 +43,7 @@
   if
 
   2 array astore dup
-  par_arr aload length -1 roll
+  par_arr aload length 1 add -1 roll
   par_arr length 1 add array astore
   /par_arr exch def
   aload pop
@@ -67,19 +68,28 @@
   } forall
   pop
 
+  pstack (print - 2222\n) print
+  
   dup type [] type eq
   { dup length 0 eq
     { pop } if
   } if
 
-  count 3 ge {
-    3 -1 roll dup /call eq
-    { 3 1 roll count 1 roll }
-    { 3 1 roll exch }
-    ifelse
-  }
-  { exch }
-  ifelse
+  par_names aload length 1 add -1 roll
+  par_names length 1 add array astore
+  /par_names exch def
+  par_names
+  %count 3 ge {
+    %3 -1 roll dup /call eq
+    %{ 3 1 roll
+    % counttomark 1 roll }
+    %{ 3 1 roll exch }
+    %ifelse
+  %}
+  %{ exch }
+  %ifelse
+
+  pstack (print - after set_pars\n) print pop
 } def
 
 % Remove pars from par_arr after function call ends
@@ -94,6 +104,7 @@
 
 % Remove pars from vars after function call ends
 /pop_var { % varname - Parameter is removed from context
+    pstack (popvar\n) print
     dup vars exch get
     % varname varvalue
     dup length 0 ne
@@ -106,25 +117,67 @@
     } if
 } def
 
+/curry_set_pars {
+%  exch (aload - curry_set_pars\n) print aload pop
+%  {
+%    length
+%    { aload pop set_par }
+%    repeat
+%    dup mark eq
+%    { pop exit }
+%    if
+%  } loop
+} def
+
+% make it simple again and save all par_arrs in an own array
+/curry_clearpars {
+%  exch (aload - curry_clearpars\n) print aload pop
+%  {
+%    dup
+%    { pop_par pop_var } forall
+%    length
+%    { pop }
+%    repeat
+%    dup mark eq
+%    { pop exit }
+%    if
+%  } loop
+} def
+
 % appends the par execution array to a lambda, for currying
 /append_par_arr { % { lambda } - { lambda + parameter values }
    par_arr length 0 ne {
      dup length 6 add array
      dup 0
-     { null
-       { aload pop set_par }
-       forall
-     } dup 0 par_arr put putinterval
+     { null % set par in schleife
+       { aload pop set_par } forall
+ %      mark curry_set_pars
+     } dup 0 par_arr dup length array copy put putinterval
      dup 3 4 -1 roll putinterval
      dup dup length 3 sub
-     { null
+     { null % clear pars in schleife
        { 0 get pop_par pop_var } forall
-     } dup 0 par_arr put putinterval cvx
+  %     mark curry_clearpars
+     } dup 0 par_arr dup length array copy put putinterval cvx
   } if
 } def
 
 /clearpars {
-  exch { pop_par pop_var } forall
+  dup /call eq
+  { pop }
+  if
+
+  par_names length 0 gt
+  {
+    par_names aload dup length 1 add 3 -1 roll exch 1 roll
+    length 1 sub array
+    astore /par_names exch def
+
+    par_names pstack (print - before loop\n) print pop
+    { par_names pstack (print - loop\n) print pop
+     pop_par pop_var } forall
+  }
+  if
 } def
 
 % checks if a function call mark has been set
