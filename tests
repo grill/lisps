@@ -25,4 +25,5 @@
 (car (cdr x))
 (define valueAt (lambda (x l) (if (> x 0) (valueAt (- x 1) (cdr l)) (car l))))
 (valueAt 7 x)
-(define foldl (lambda (lst f) (if (= (length lst) 0) (0) (f (car lst) (foldl (cdr lst) f)))))
+(define map (lambda (f l) (if (> (length l) 0) (cons (f (car l)) (map f (cdr l))) (list ))))
+(map twice x)
