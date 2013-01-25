@@ -12,7 +12,7 @@
 (twice 5)
 (define compose (lambda (f g) (lambda (x) (f (g x)))))
 ((compose twice twice) 5)
-((compose list twice) 5)
+((compose list twice) 5)						#geht nicht
 (define repeat (lambda (f) (compose f f)))
 ((repeat twice) 5)
 ((repeat (repeat twice)) 5)						# fail aus unerfindlichen gruenden
@@ -29,3 +29,14 @@
 (riff-shuffle (list 1 2 3 4 5 6 7 8))
 ((repeat riff-shuffle) (list 1 2 3 4 5 6 7 8))
 (riff-shuffle (riff-shuffle (riff-shuffle (list 1 2 3 4 5 6 7 8))))
+
+
+### new tests ###
+(define x (list 0 1 2 3 4 5 6 7 8 9))
+(length x)
+(car (cdr x))
+
+### take x'th element of list
+(define element (lambda (x l) (if (> x 0) (element (- x 1) (cdr l)) (car l))))
+
+
