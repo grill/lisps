@@ -38,7 +38,6 @@
 ### take x'th element of list
 (define element (lambda (x l) (if (> x 0) (element (- x 1) (cdr l)) (car l))))
 
+### map
 (define map (lambda (f l) (if (> (length l) 0) (cons (f (car l)) (map f (cdr l))) (list ))))
-(define x (list 0 1 2 3 4))
-(define g (lambda (x) (* x 2)))
-(map g x)
+(map twice x)
