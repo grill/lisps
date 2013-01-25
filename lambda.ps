@@ -2,7 +2,6 @@
 /par_names [] def
 
 /set_par { % varname value - (vars parameter added)
-  pstack (set par -------------------\n) print
 
   % call_fun
 
@@ -26,7 +25,6 @@
   counttomark 2 add -1 roll
   ]
   vars 3 1 roll
-  pstack (uuuuuuuuuuuuuuuuu\n) print
   put
 } def
 
@@ -36,7 +34,6 @@
 
   knownVar
   { vars exch get dup length 1 sub get } if
-  pstack (get par -------------------\n) print
 
   dup type {} type eq
   { exec }
@@ -68,7 +65,6 @@
   } forall
   pop
 
-  pstack (print - 2222\n) print
   
   dup type [] type eq
   { dup length 0 eq
@@ -89,7 +85,7 @@
   %{ exch }
   %ifelse
 
-  pstack (print - after set_pars\n) print pop
+  pop
 } def
 
 % Remove pars from par_arr after function call ends
@@ -104,7 +100,6 @@
 
 % Remove pars from vars after function call ends
 /pop_var { % varname - Parameter is removed from context
-    pstack (popvar\n) print
     dup vars exch get
     % varname varvalue
     dup length 0 ne
@@ -173,8 +168,8 @@
     length 1 sub array
     astore /par_names exch def
 
-    par_names pstack (print - before loop\n) print pop
-    { par_names pstack (print - loop\n) print pop
+    par_names pop
+    { par_names pop
      pop_par pop_var } forall
   }
   if

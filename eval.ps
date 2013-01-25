@@ -161,7 +161,7 @@
   {
     dup dictionary exch known % test if command is known
     { dictionary exch get exec exec }
-    { (cvi - exec_exp\n) print cvi }
+    { cvi }
     ifelse
 
     exch pop
@@ -174,7 +174,7 @@
   dup length 1 sub get
   dup type {} type eq
   { exec conv_str }
-  { (cvi - getVar\n) print cvi }
+  { cvi }
   ifelse
 } def
 
@@ -186,10 +186,10 @@
       pop % remove /call
       dup dictionary exch known % test if command is known
       { dictionary exch get exec exec }
-      { (cvi - conv_str1\n) print cvi }
+      { cvi }
       ifelse
     }
-    { exch  (cvi - conv_str2\n) print  cvi }
+    { exch cvi }
     ifelse
   }
   if
@@ -209,7 +209,7 @@
 
     dup dictionary exch known % test if command is known
     { dictionary exch get exec exec }
-    { (cvi - getVal\n) print
+    {
       dup /call eq
       { pop getVal }
       {
