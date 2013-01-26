@@ -16,5 +16,5 @@ With ghostscipt:
 
   > gs lis.ps
 
-  > >lisps
+  > lisps
 
