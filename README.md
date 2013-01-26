@@ -14,7 +14,7 @@ To end lisps just enter Ctrl+D.
 
 With ghostscipt:
 
-  gs lis.ps
+  > gs lis.ps
 
-  > lisps
+  > >lisps
 
